@@ -2,11 +2,17 @@ import { Column } from 'typeorm';
 
 export class CreateUserInput {
   @Column()
-  name: string;
+  email: string;
+
   @Column()
-  age: string;
+  age: number;
+
   @Column()
   phone: string;
+
   @Column()
   address: string;
+
+  @Column()
+  password: string;
 }

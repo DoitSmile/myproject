@@ -3,13 +3,20 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity() // class가 실행될 때 typeorm에 의해 entity테이블 생성
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  Id: string;
+  id: string;
+
   @Column()
-  name: string;
+  email: string;
+
   @Column()
-  age: string;
+  age: number;
+
   @Column()
   phone: string;
+
   @Column()
   address: string;
+
+  @Column()
+  password: string;
 }
