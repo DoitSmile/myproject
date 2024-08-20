@@ -7,11 +7,6 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  // //회원 조회 API
-  // @Get('/:userId')
-  // fetchUser(@Param('userId') userId: string) {
-  //   return this.userService.fetchUser({ userId });
-  // }
 
   // 회원가입 API
   @Post('/user/create')
@@ -25,6 +20,7 @@ export class UserController {
   // UseGuards- >로그인을 한 유저면 api 실행
   @Post('/user/userguard')
   fetchUser(@Req() req): string {
+    console.log(req.user);
     return req.user;
   }
 }

@@ -5,9 +5,15 @@ import { PhoneAuthentication } from './checkphone';
 import { JwtModule } from '@nestjs/jwt';
 import { JWtAccessStrategy } from './strategies/jwt-access.strategy';
 import { UserModule } from '../user/user.module';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh-strategy';
 @Module({
   imports: [JwtModule.register({}), UserModule],
   controllers: [AuthController],
-  providers: [AuthService, PhoneAuthentication, JWtAccessStrategy],
+  providers: [
+    AuthService,
+    PhoneAuthentication,
+    JWtAccessStrategy,
+    JwtRefreshStrategy,
+  ],
 })
 export class AuthModule {}

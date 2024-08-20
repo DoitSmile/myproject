@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entites/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import {
+  IUserCreateUserInput,
+  IUserEmail,
+} from './interfaces/user-service.interface';
 
 @Injectable()
 export class UserService {
@@ -12,14 +16,14 @@ export class UserService {
   ) {}
 
   // 이메일로 유저 찾기
-  async findEmail({ email }) {
+  async findEmail({ email }: IUserEmail) {
     return await this.userRepository.findOne({
       where: { email },
     });
   }
 
   // 회원가입
-  async createUser(createUserInput): Promise<User> {
+  async createUser(createUserInput: IUserCreateUserInput): Promise<User> {
     const { email, age, phone, address, password } = createUserInput;
     const user = await this.findEmail({ email });
     if (user) throw new ConflictException('이미 존재하는 이메일입니다.');
