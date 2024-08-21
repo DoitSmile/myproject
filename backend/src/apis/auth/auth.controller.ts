@@ -37,6 +37,7 @@ export class AuthController {
   @UseGuards(AuthGuard('refresh'))
   @Post('/user/reissueToken')
   reissueAccessToken(@Req() req) {
+    console.log('req.user:', req.user);
     return this.authService.reissueAccessToken({ user: req.user });
   }
 }

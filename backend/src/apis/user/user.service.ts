@@ -1,11 +1,16 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entites/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import {
-  IUserCreateUserInput,
+  IUserCreateUser,
   IUserEmail,
+  IUserUpdatePassword,
 } from './interfaces/user-service.interface';
 
 @Injectable()
@@ -22,19 +27,91 @@ export class UserService {
     });
   }
 
+  // 아이디로 유저 찾기
+  async findId({ id }) {
+    return await this.userRepository.findOne({
+      where: { id },
+    });
+  }
   // 회원가입
-  async createUser(createUserInput: IUserCreateUserInput): Promise<User> {
-    const { email, age, phone, address, password } = createUserInput;
+  async createUser({ createUserInput }: IUserCreateUser): Promise<User> {
+    const { email, name, age, phone, address, password } = createUserInput;
     const user = await this.findEmail({ email });
     if (user) throw new ConflictException('이미 존재하는 이메일입니다.');
     const hashpassword = await bcrypt.hash(password, 10);
     console.log(hashpassword);
     return await this.userRepository.save({
+      name,
       email,
       age,
       phone,
       address,
       password: hashpassword,
     });
+  }
+
+  // 회원 조회
+  async fetchUser(id) {
+    return await this.userRepository.findOne({
+      where: { id },
+    });
+  }
+
+  // 회원 수정
+  async updateUser(updateUserInput, id) {
+    console.log('updateUserInput:', updateUserInput);
+    console.log('id:', id);
+    return await this.userRepository.update({ id }, { ...updateUserInput });
+  }
+
+  // 회원 탈퇴
+  async delUser(password, id) {
+    const user = await this.findId({ id });
+    const isAuth = await bcrypt.compare(password, user.password);
+    if (isAuth) {
+      await this.userRepository.softRemove({ id });
+    } else {
+      throw new ConflictException('일치하지 않는 비밀번호입니다.');
+    }
+    return console.log('탈퇴완료');
+  }
+
+  // 비밀번호를 확인하는 함수
+  async validPassword(new_password, new_password_check, id) {
+    if (new_password === new_password_check) {
+      const hashpassword = await bcrypt.hash(new_password, 10);
+      await this.userRepository.update({ id }, { password: hashpassword });
+      console.log('비밀번호 변경 완료');
+    } else {
+      throw new ConflictException('새로 입력한 비밀번호가 일치하지 않습니다.');
+    }
+  }
+
+  // 기존 비밀번호와 새로입력한 비밀번호 일치 확인
+  validNewPassword(password, new_password) {
+    if (password === new_password) {
+      throw new UnauthorizedException('기존과 다른 비밀번호를 입력해주세요');
+    }
+  }
+
+  // 비밀번호 변경
+  async updateUserPassword({ updatePasswordInput }: IUserUpdatePassword, id) {
+    const { password, new_password, new_password_check } = updatePasswordInput;
+
+    const user = await this.findId({ id });
+
+    if (password === new_password) {
+      throw new UnauthorizedException('기존과 다른 비밀번호를 입력해주세요');
+    }
+
+    const isAuth = await bcrypt.compare(password, user.password);
+
+    if (isAuth) {
+      this.validNewPassword(password, new_password);
+      await this.validPassword(new_password, new_password_check, id);
+    } else {
+      console.log('비밀번호 불일치');
+      throw new ConflictException('비밀번호가 일치하지 않습니다.');
+    }
   }
 }

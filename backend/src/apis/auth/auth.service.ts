@@ -31,13 +31,14 @@ export class AuthService {
       throw new ConflictException('로그인 실패');
     }
   }
+
   // 리프레시 토큰 발급
   setRefreshToken({ user, res }): void {
     const refreshToken = this.jwtService.sign(
       { email: user.email },
       { secret: '리프레시비밀번호', expiresIn: '2w' },
     );
-
+    console.log(refreshToken);
     res.cookie('Authentication', refreshToken, {
       domain: 'localhost',
       path: '/',
@@ -47,8 +48,9 @@ export class AuthService {
 
   // 토큰 발급
   getAccessToken({ user }): string {
+    console.log('user.id', user.id);
     return this.jwtService.sign(
-      { email: user.email },
+      { id: user.id }, //payload엔 보여줘도 되는 값만 입력
       { secret: '나의비밀번호', expiresIn: '10m' },
     ); // return 타입: 발급받은 토큰
   }
@@ -63,10 +65,10 @@ export class AuthService {
     const checkValid = await this.authphone.checkphone(myphone);
     if (checkValid) throw new ConflictException('유효하지 않은 핸드폰 번호');
     const mytoken = this.authphone.getToken();
-    this.users = mytoken;
-    console.log(this.users);
+    this.users = mytoken; // 인증번호 임시저장하기
+    // console.log(this.users);
     // await this.authphone.sendTokenToSMS(phone, mytoken);
-    return '토큰전송';
+    return mytoken;
   }
 
   // 핸드폰 인증번호 검증

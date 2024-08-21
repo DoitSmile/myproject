@@ -20,7 +20,7 @@ export class JWtAccessStrategy extends PassportStrategy(Strategy, 'access') {
   //검증에 성공(인가에 성공)한다면 payload를 열어서 사용자의 정보를 반환
   async validate(payload) {
     return {
-      email: payload.email,
+      id: payload.id,
     };
   }
   // return : fetchUser API로 return 되는 것이 아님

@@ -5,6 +5,9 @@ export class CreateUserInput {
   email: string;
 
   @Column()
+  name: string;
+
+  @Column()
   age: number;
 
   @Column()

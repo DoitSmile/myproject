@@ -1,15 +1,14 @@
-export class IUserCreateUserInput {
-  email: string;
+import { CreateUserInput } from '../dto/create-user.input.dto';
+import { UpdatePasswordInput } from '../dto/update-userpassword.input.dto';
 
-  age: number;
-
-  phone: string;
-
-  address: string;
-
-  password: string;
+export class IUserCreateUser {
+  createUserInput: CreateUserInput;
 }
 
 export class IUserEmail {
   email: string;
+}
+
+export class IUserUpdatePassword {
+  updatePasswordInput: UpdatePasswordInput;
 }
